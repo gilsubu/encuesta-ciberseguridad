@@ -118,7 +118,7 @@ form.onsubmit=e=>{
       row.push(x)}
     else row.push(f.t==='i'?Number(v):v);
   }
-  mine=row;msg='Tu respuesta aparece como el registro 81. Solo la ves tú en esta pantalla: no se guarda ni la recibe nadie.';
+  mine=row;msg='Tu respuesta aparece como el registro 81.';
   form.reset();sync();render();show('V');
   const m=document.querySelector('#vV tr.mine');if(m)m.scrollIntoView({block:'center'});
 };
