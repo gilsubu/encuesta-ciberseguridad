@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Encuesta de ciberseguridad</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#14213d;--mut:#5b6577;--line:#d9dee7;--acc:#0b6e8a;--accink:#fff;--mine:#fff3c4;--bad:#b42318;--ok:#e3f4ea;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141c;--card:#171d29;--ink:#e8ecf3;--mut:#9aa6ba;--line:#2a3345;--acc:#4cc3e0;--accink:#06222b;--mine:#4a3f12;--bad:#ff8a80;--ok:#12372a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141c;--card:#171d29;--ink:#e8ecf3;--mut:#9aa6ba;--line:#2a3345;--acc:#4cc3e0;--accink:#06222b;--mine:#4a3f12;--bad:#ff8a80;--ok:#12372a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--mut);margin:0 0 16px}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 18px;font-weight:600}
+button.on,button.go{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+fieldset{border:1px solid var(--line);border-radius:12px;background:var(--card);margin:0 0 16px;padding:14px 16px 6px}
+legend{font-weight:700;padding:0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2px 20px}
+label{display:block;font-size:.93rem;margin-bottom:14px}
+label span{display:block;margin-bottom:4px}
+label small{color:var(--mut)}
+input,select{width:100%;font:inherit;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.err{color:var(--bad);font-weight:600;margin:8px 0;min-height:1.2em}
+.ok{background:var(--ok);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.tools input{max-width:320px}
+.tools b{color:var(--acc)}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);max-height:70vh}
+table{border-collapse:collapse;width:100%;font-size:.85rem;white-space:nowrap}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{position:sticky;top:0;background:var(--bg);z-index:1}
+tr.mine td{background:var(--mine);font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Encuesta de ciberseguridad</h1>
+<p class="sub">Hábitos de ciberseguridad y nivel de conocimientos tecnológicos en estudiantes universitarios. Responde la encuesta y mira tu respuesta como el registro 81 de la base.</p>
+<div class="tabs"><button id="bF" class="on">Enviar respuesta</button><button id="bV">Ver respuestas</button></div>
+<section id="vF"></section>
+<section id="vV" hidden></section>
+</main>
+<script>
+const COLS=['id','rango_edad','carrera','semestre','dispositivo_principal','horas_internet_dia','horas_practica_sem','usa_2fa','frecuencia_cambio_clave','reutiliza_clave','frecuencia_actualizacion','autoeval_ciberseguridad','phishing_30d','incidente_12m','tipo_incidente','num_incidentes_12m','resp_p16','resp_p17','resp_p18','resp_p19','resp_p20'];
+const DATA=[[1,"17 a 20 años","Ingeniería en Sistemas",4,"Computadora portátil",3.8,13.5,"Sí","Solamente cuando es necesario","No","Algunas veces al año",4,8,"No","Ninguno",0,3,1,2,2,2],[2,"21 a 25 años","Otra ingeniería",7,"Computadora portátil",5.1,1.1,"No","Nunca las cambio","No estoy seguro","Algunas veces al año",1,4,"Sí","Pérdida de información",1,4,1,2,4,2],[3,"21 a 25 años","Ingeniería en Sistemas",2,"Otro",2.9,3.9,"No","Solamente cuando es necesario","No","Algunas veces al año",2,3,"No","Ninguno",0,1,1,2,2,1],[4,"21 a 25 años","Ingeniería en Sistemas",4,"Computadora portátil",4.1,13.9,"Sí","Solamente cuando es necesario","No","Inmediatamente",3,2,"No","Ninguno",0,1,4,2,2,1],[5,"21 a 25 años","Ingeniería en Sistemas",1,"Computadora portátil",4.5,11.1,"No","Una vez al año","No estoy seguro","Inmediatamente",3,3,"Sí","Fraude o engaño digital",3,1,4,1,4,1],[6,"21 a 25 años","Otra ingeniería",7,"Teléfono celular",3.2,10.5,"No","Cada 4 a 6 meses","Sí","Una vez al mes",3,4,"No","Ninguno",0,3,4,1,2,2],[7,"26 a 30 años","Ingeniería en Sistemas",7,"Computadora de escritorio",2.9,8.3,"No","Solamente cuando es necesario","No estoy seguro","Una vez al mes",2,5,"Sí","Fraude o engaño digital",2,3,1,1,3,2],[8,"17 a 20 años","Otra ingeniería",7,"Teléfono celular",4.3,6.5,"Sí","Cada 1 a 3 meses","No estoy seguro","Algunas veces al año",2,3,"No","Ninguno",0,3,4,1,2,2],[9,"21 a 25 años","Otra ingeniería",10,"Computadora portátil",5.4,8.6,"Sí","Cada 4 a 6 meses","No estoy seguro","Nunca",3,3,"No","Ninguno",0,1,4,4,2,2],[10,"17 a 20 años","Ciencias Sociales",8,"Teléfono celular",3.4,5.0,"Sí","Solamente cuando es necesario","No estoy seguro","Una vez al mes",3,4,"Sí","Fraude o engaño digital",3,4,4,2,3,2],[11,"31 a 40 años","Otra carrera",3,"Tableta",3.1,3.1,"No","Solamente cuando es necesario","No","Solamente cuando es obligatorio",1,3,"Sí","Pérdida de información",1,3,4,4,3,2],[12,"26 a 30 años","Ingeniería en Sistemas",10,"Computadora de escritorio",4.0,5.6,"Sí","Cada 1 a 3 meses","No","Una vez al mes",2,0,"No","Ninguno",0,2,1,2,1,4],[13,"21 a 25 años","Otra carrera",3,"Tableta",4.6,8.4,"No","Cada 4 a 6 meses","No","Algunas veces al año",3,2,"No","Ninguno",0,2,3,2,2,3],[14,"21 a 25 años","Administración o Economía",7,"Computadora portátil",3.4,10.0,"Sí","Solamente cuando es necesario","Sí","Inmediatamente",2,3,"No","Ninguno",0,3,4,1,2,1],[15,"21 a 25 años","Otra ingeniería",7,"Computadora portátil",3.7,13.3,"Sí","Una vez al año","No estoy seguro","Algunas veces al año",4,3,"No","Ninguno",0,1,2,2,2,2],[16,"21 a 25 años","Otra ingeniería",3,"Teléfono celular",3.9,9.2,"Sí","Solamente cuando es necesario","Sí","Algunas veces al año",3,3,"No","Ninguno",0,4,4,2,2,2],[17,"21 a 25 años","Ingeniería en Sistemas",9,"Computadora de escritorio",2.7,10.7,"Sí","Cada 4 a 6 meses","Sí","Solamente cuando es obligatorio",3,2,"No","Ninguno",0,2,1,2,2,3],[18,"21 a 25 años","Otra carrera",6,"Computadora portátil",4.0,13.4,"Sí","Solamente cuando es necesario","No estoy seguro","Inmediatamente",3,2,"No","Ninguno",0,3,3,1,2,2],[19,"17 a 20 años","Ingeniería en Sistemas",7,"Computadora portátil",3.4,6.7,"Sí","Cada 4 a 6 meses","No estoy seguro","Algunas veces al año",3,3,"No","Ninguno",0,2,4,1,3,2],[20,"17 a 20 años","Otra ingeniería",4,"Computadora portátil",6.4,4.9,"No","Una vez al año","Sí","Solamente cuando es obligatorio",3,3,"Sí","Fraude o engaño digital",3,3,1,1,2,4],[21,"21 a 25 años","Administración o Economía",8,"Teléfono celular",3.5,6.3,"Sí","Una vez al año","No estoy seguro","Algunas veces al año",3,4,"No","Ninguno",0,3,4,3,3,4],[22,"21 a 25 años","Ingeniería en Sistemas",4,"Computadora portátil",4.8,8.9,"Sí","Solamente cuando es necesario","No","Inmediatamente",3,4,"No","Ninguno",0,1,4,2,4,3],[23,"21 a 25 años","Otra ingeniería",1,"Computadora portátil",4.7,14.5,"No","Nunca las cambio","No","Solamente cuando es obligatorio",4,2,"No","Ninguno",0,1,4,2,2,3],[24,"17 a 20 años","Ingeniería en Sistemas",9,"Teléfono celular",2.6,8.1,"Sí","Cada 4 a 6 meses","No","Inmediatamente",2,7,"Sí","Otro",2,3,1,3,1,1],[25,"21 a 25 años","Administración o Economía",5,"Otro",2.5,12.2,"Sí","Cada 4 a 6 meses","Sí","Inmediatamente",3,3,"No","Ninguno",0,2,4,4,2,2],[26,"21 a 25 años","Ingeniería en Sistemas",6,"Teléfono celular",3.6,7.7,"No","Cada 4 a 6 meses","Sí","Inmediatamente",3,2,"No","Ninguno",0,2,2,2,2,3],[27,"17 a 20 años","Otra ingeniería",10,"Computadora portátil",5.1,9.6,"Sí","Solamente cuando es necesario","Sí","Solamente cuando es obligatorio",3,5,"Sí","Pérdida de información",4,4,4,2,2,1],[28,"21 a 25 años","Ciencias Sociales",8,"Computadora de escritorio",3.4,10.2,"Sí","Una vez al año","Sí","Solamente cuando es obligatorio",3,1,"No","Ninguno",0,1,3,4,2,2],[29,"21 a 25 años","Otra ingeniería",7,"Computadora portátil",3.3,9.7,"Sí","Nunca las cambio","Sí","Solamente cuando es obligatorio",3,4,"No","Ninguno",0,4,1,2,3,1],[30,"17 a 20 años","Ingeniería en Sistemas",8,"Computadora portátil",0.5,11.6,"Sí","Cada 1 a 3 meses","Sí","Algunas veces al año",4,2,"No","Ninguno",0,4,4,3,2,3],[31,"17 a 20 años","Otra ingeniería",4,"Computadora portátil",3.6,5.8,"No","Solamente cuando es necesario","Sí","Solamente cuando es obligatorio",2,5,"No","Ninguno",0,3,1,2,4,2],[32,"26 a 30 años","Ingeniería en Sistemas",7,"Computadora portátil",4.6,13.9,"No","Solamente cuando es necesario","No","Solamente cuando es obligatorio",3,2,"No","Ninguno",0,3,4,1,2,2],[33,"21 a 25 años","Otra ingeniería",8,"Teléfono celular",4.8,11.1,"No","Solamente cuando es necesario","No","Algunas veces al año",4,0,"No","Ninguno",0,3,3,2,2,2],[34,"21 a 25 años","Ingeniería en Sistemas",7,"Computadora portátil",4.8,7.0,"No","Una vez al año","No","Algunas veces al año",3,4,"No","Ninguno",0,3,4,1,4,3],[35,"21 a 25 años","Ingeniería en Sistemas",5,"Computadora portátil",3.7,10.8,"Sí","Solamente cuando es necesario","No","Solamente cuando es obligatorio",3,4,"No","Ninguno",0,3,4,1,2,2],[36,"26 a 30 años","Ingeniería en Sistemas",1,"Teléfono celular",3.9,5.8,"No","Solamente cuando es necesario","No","Algunas veces al año",3,6,"Sí","Virus o software malicioso",2,4,3,1,2,2],[37,"21 a 25 años","Ingeniería en Sistemas",7,"Teléfono celular",5.4,9.5,"No","Nunca las cambio","No","Inmediatamente",3,2,"Sí","Acceso no autorizado a una cuenta",1,3,1,2,2,3],[38,"21 a 25 años","Otra ingeniería",6,"Teléfono celular",4.0,4.3,"No","Cada 4 a 6 meses","No","Solamente cuando es obligatorio",1,3,"Sí","Robo o pérdida de contraseña",1,3,2,1,2,3],[39,"26 a 30 años","Ingeniería en Sistemas",5,"Teléfono celular",1.0,11.5,"Sí","Solamente cuando es necesario","No","Inmediatamente",2,4,"No","Ninguno",0,2,4,3,4,1],[40,"21 a 25 años","Ingeniería en Sistemas",7,"Tableta",5.6,18.7,"No","Solamente cuando es necesario","No estoy seguro","Algunas veces al año",3,3,"Sí","Robo o pérdida de contraseña",1,3,4,2,3,2],[41,"21 a 25 años","Otra ingeniería",6,"Computadora portátil",2.7,12.7,"No","Nunca las cambio","Sí","Solamente cuando es obligatorio",4,6,"No","Ninguno",0,3,4,2,1,2],[42,"21 a 25 años","Ciencias Sociales",6,"Teléfono celular",6.1,10.3,"No","Cada 1 a 3 meses","No","Algunas veces al año",3,2,"Sí","Fraude o engaño digital",2,2,4,3,2,1],[43,"17 a 20 años","Ingeniería en Sistemas",2,"Computadora portátil",6.6,6.3,"Sí","Solamente cuando es necesario","No","Algunas veces al año",2,4,"No","Ninguno",0,3,4,3,2,2],[44,"21 a 25 años","Ingeniería en Sistemas",2,"Computadora portátil",5.3,10.4,"No","Solamente cuando es necesario","No","Una vez al mes",1,1,"Sí","Acceso no autorizado a una cuenta",1,3,4,3,2,3],[45,"17 a 20 años","Ingeniería en Sistemas",6,"Teléfono celular",5.5,13.0,"No","Solamente cuando es necesario","No","Una vez al mes",2,1,"Sí","Robo o pérdida de contraseña",1,3,4,2,3,2],[46,"21 a 25 años","Ingeniería en Sistemas",6,"Computadora portátil",6.8,8.9,"Sí","Solamente cuando es necesario","No","Algunas veces al año",3,3,"No","Ninguno",0,4,4,1,3,2],[47,"21 a 25 años","Otra ingeniería",6,"Teléfono celular",2.7,8.4,"Sí","Solamente cuando es necesario","No","Algunas veces al año",1,1,"No","Ninguno",0,3,2,2,1,4],[48,"17 a 20 años","Administración o Economía",6,"Computadora portátil",4.6,2.6,"Sí","Solamente cuando es necesario","No","Algunas veces al año",3,2,"No","Ninguno",0,3,1,2,4,2],[49,"21 a 25 años","Ingeniería en Sistemas",6,"Computadora portátil",4.5,6.5,"No","Una vez al año","No","Algunas veces al año",2,4,"Sí","Robo o pérdida de contraseña",1,2,2,1,2,4],[50,"21 a 25 años","Otra ingeniería",6,"Computadora portátil",2.8,2.1,"No","Cada 1 a 3 meses","No","Nunca",2,3,"Sí","Acceso no autorizado a una cuenta",1,1,1,3,3,4],[51,"21 a 25 años","Otra carrera",6,"Computadora portátil",7.0,14.1,"Sí","Solamente cuando es necesario","Sí","Algunas veces al año",3,2,"Sí","Fraude o engaño digital",1,1,4,2,2,2],[52,"21 a 25 años","Otra ingeniería",6,"Teléfono celular",3.4,9.5,"No","Solamente cuando es necesario","Sí","Algunas veces al año",2,5,"No","Ninguno",0,1,1,3,2,4],[53,"21 a 25 años","Administración o Economía",8,"Teléfono celular",3.2,10.3,"No","Solamente cuando es necesario","No estoy seguro","Solamente cuando es obligatorio",2,2,"No","Ninguno",0,1,1,3,2,4],[54,"21 a 25 años","Ciencias Sociales",4,"Computadora portátil",4.6,7.4,"Sí","Una vez al año","No","Algunas veces al año",1,6,"No","Ninguno",0,1,3,4,1,2],[55,"21 a 25 años","Ingeniería en Sistemas",7,"Computadora portátil",5.6,4.5,"No","Solamente cuando es necesario","Sí","Una vez al mes",2,4,"No","Ninguno",0,4,2,2,2,2],[56,"21 a 25 años","Otra ingeniería",7,"Computadora portátil",3.4,8.6,"Sí","Solamente cuando es necesario","Sí","Solamente cuando es obligatorio",3,3,"No","Ninguno",0,4,1,2,2,2],[57,"21 a 25 años","Administración o Economía",6,"Computadora portátil",3.4,6.0,"Sí","Una vez al año","Sí","Solamente cuando es obligatorio",2,9,"No","Ninguno",0,2,3,2,2,2],[58,"21 a 25 años","Ciencias Sociales",4,"Computadora portátil",4.9,4.9,"Sí","Solamente cuando es necesario","No","Nunca",2,4,"No","Ninguno",0,3,4,2,1,4],[59,"17 a 20 años","Ingeniería en Sistemas",6,"Computadora de escritorio",2.2,9.4,"Sí","Nunca las cambio","No","Inmediatamente",2,5,"No","Ninguno",0,1,3,2,2,3],[60,"21 a 25 años","Otra ingeniería",7,"Computadora portátil",3.1,8.4,"No","Una vez al año","Sí","Algunas veces al año",3,4,"Sí","Robo o pérdida de contraseña",3,4,4,2,1,2],[61,"21 a 25 años","Otra ingeniería",3,"Computadora portátil",3.0,7.4,"No","Cada 4 a 6 meses","Sí","Inmediatamente",1,3,"No","Ninguno",0,3,4,1,2,2],[62,"21 a 25 años","Ingeniería en Sistemas",6,"Computadora portátil",3.6,6.7,"Sí","Solamente cuando es necesario","No estoy seguro","Una vez al mes",2,2,"No","Ninguno",0,3,1,3,2,1],[63,"21 a 25 años","Ingeniería en Sistemas",6,"Computadora portátil",4.0,6.0,"Sí","Solamente cuando es necesario","Sí","Una vez al mes",2,2,"No","Ninguno",0,3,3,2,2,3],[64,"17 a 20 años","Ingeniería en Sistemas",4,"Teléfono celular",6.8,9.2,"No","Solamente cuando es necesario","No estoy seguro","Inmediatamente",2,1,"Sí","Virus o software malicioso",1,2,4,3,2,2],[65,"26 a 30 años","Otra carrera",4,"Computadora portátil",5.5,11.9,"Sí","Nunca las cambio","Sí","Nunca",3,4,"No","Ninguno",0,3,4,2,3,1],[66,"31 a 40 años","Ingeniería en Sistemas",2,"Teléfono celular",4.2,4.1,"No","Nunca las cambio","No","Algunas veces al año",2,6,"Sí","Fraude o engaño digital",3,2,3,2,1,2],[67,"17 a 20 años","Ingeniería en Sistemas",3,"Teléfono celular",3.9,7.1,"No","Solamente cuando es necesario","No","Una vez al mes",3,2,"No","Ninguno",0,3,4,1,1,2],[68,"21 a 25 años","Ingeniería en Sistemas",2,"Computadora portátil",5.4,8.7,"Sí","Solamente cuando es necesario","No","Solamente cuando es obligatorio",4,1,"No","Ninguno",0,3,1,2,4,2],[69,"21 a 25 años","Ingeniería en Sistemas",4,"Computadora portátil",4.8,8.7,"Sí","Cada 4 a 6 meses","No","Inmediatamente",4,4,"No","Ninguno",0,3,4,2,2,4],[70,"21 a 25 años","Ingeniería en Sistemas",4,"Computadora portátil",5.4,7.3,"Sí","Una vez al año","Sí","Una vez al mes",3,4,"No","Ninguno",0,3,2,4,1,2],[71,"21 a 25 años","Otra carrera",4,"Computadora portátil",6.1,14.2,"No","Solamente cuando es necesario","No estoy seguro","Algunas veces al año",4,2,"No","Ninguno",0,2,2,2,3,3],[72,"21 a 25 años","Ingeniería en Sistemas",6,"Computadora portátil",2.8,10.5,"Sí","Una vez al año","No","Algunas veces al año",4,3,"No","Ninguno",0,4,2,3,1,4],[73,"21 a 25 años","Otra ingeniería",5,"Teléfono celular",1.0,4.8,"Sí","Cada 4 a 6 meses","No estoy seguro","Solamente cuando es obligatorio",3,1,"No","Ninguno",0,1,4,1,1,2],[74,"31 a 40 años","Ingeniería en Sistemas",4,"Teléfono celular",4.2,3.2,"No","Cada 1 a 3 meses","No estoy seguro","Una vez al mes",1,4,"No","Ninguno",0,2,4,4,2,2],[75,"26 a 30 años","Otra ingeniería",4,"Computadora portátil",4.3,7.4,"Sí","Cada 4 a 6 meses","No","Inmediatamente",3,1,"No","Ninguno",0,1,4,2,2,1],[76,"21 a 25 años","Ingeniería en Sistemas",3,"Teléfono celular",4.6,13.9,"Sí","Solamente cuando es necesario","No","Una vez al mes",3,6,"No","Ninguno",0,2,4,4,4,4],[77,"17 a 20 años","Administración o Economía",5,"Computadora portátil",3.4,8.6,"No","Nunca las cambio","No estoy seguro","Algunas veces al año",4,1,"No","Ninguno",0,2,4,3,2,1],[78,"26 a 30 años","Ingeniería en Sistemas",5,"Teléfono celular",3.9,1.8,"No","Una vez al año","No","Solamente cuando es obligatorio",3,1,"No","Ninguno",0,1,3,3,1,2],[79,"17 a 20 años","Ingeniería en Sistemas",9,"Computadora portátil",5.0,4.8,"No","Solamente cuando es necesario","No","Solamente cuando es obligatorio",2,5,"Sí","Acceso no autorizado a una cuenta",2,2,3,2,4,1],[80,"17 a 20 años","Administración o Economía",9,"Computadora portátil",5.1,8.4,"No","Cada 4 a 6 meses","No","Nunca",2,3,"Sí","Otro",2,3,4,2,2,2]];
+const SN=['Sí','No'];
+/* tipos: s = lista (se guarda el texto), i = lista numerada (se guarda 1..n), n = número */
+const Q=[
+['Sección A. Información general',[
+['rango_edad','1. ¿Cuál es su rango de edad?','s',['17 a 20 años','21 a 25 años','26 a 30 años','31 a 40 años','Más de 40 años']],
+['carrera','2. ¿Qué carrera estudia?','s',['Ingeniería en Sistemas','Otra ingeniería','Administración o Economía','Ciencias Sociales','Otra carrera']],
+['semestre','3. ¿En qué semestre se encuentra? (1 a 10)','n',{min:1,max:10,int:1}],
+['dispositivo_principal','4. ¿Cuál es el dispositivo que utiliza principalmente para sus actividades académicas?','s',['Computadora portátil','Computadora de escritorio','Teléfono celular','Tableta','Otro']]]],
+['Sección B. Uso de tecnología y hábitos de seguridad',[
+['horas_internet_dia','5. ¿Cuántas horas al día utiliza Internet para actividades académicas? (puede usar decimales)','n',{min:0,max:24}],
+['horas_practica_sem','6. ¿Cuántas horas a la semana dedica a estudiar o practicar temas de tecnología? (puede usar decimales)','n',{min:0,max:112}],
+['usa_2fa','7. ¿Utiliza autenticación de dos factores en sus cuentas principales?','s',SN],
+['frecuencia_cambio_clave','8. ¿Con qué frecuencia cambia sus contraseñas?','s',['Cada 1 a 3 meses','Cada 4 a 6 meses','Una vez al año','Solamente cuando es necesario','Nunca las cambio']],
+['reutiliza_clave','9. ¿Utiliza la misma contraseña en más de una cuenta?','s',['Sí','No','No estoy seguro']],
+['frecuencia_actualizacion','10. ¿Con qué frecuencia actualiza el sistema operativo y las aplicaciones?','s',['Inmediatamente','Una vez al mes','Algunas veces al año','Solamente cuando es obligatorio','Nunca']],
+['autoeval_ciberseguridad','11. ¿Cuál considera que es su nivel de conocimiento sobre ciberseguridad?','i',['1 Muy bajo','2 Bajo','3 Intermedio','4 Alto','5 Muy alto']]]],
+['Sección C. Incidentes de seguridad',[
+['phishing_30d','12. Durante los últimos 30 días, ¿cuántos mensajes o correos sospechosos de fraude o phishing ha recibido? (número entero)','n',{min:0,max:500,int:1}],
+['incidente_12m','13. Durante los últimos 12 meses, ¿ha sufrido algún incidente de seguridad digital?','s',SN],
+['tipo_incidente','14. ¿Qué tipo de incidente sufrió?','s',['Acceso no autorizado a una cuenta','Robo o pérdida de contraseña','Virus o software malicioso','Fraude o engaño digital','Pérdida de información','Otro']],
+['num_incidentes_12m','15. ¿Cuántos incidentes de seguridad digital ha sufrido durante los últimos 12 meses? (número entero)','n',{min:1,max:100,int:1}]]],
+['Sección D. Prueba corta de conocimientos',[
+['resp_p16','16. Recibe un correo que solicita ingresar urgentemente a un enlace para evitar el bloqueo de su cuenta. ¿Qué haría primero?','i',['Abrir el enlace inmediatamente','Responder al correo','Verificar el remitente y acceder directamente al sitio oficial','Reenviar el correo a otras personas']],
+['resp_p17','17. ¿Cuál de las siguientes contraseñas es más segura?','i',['sistemas123','Guatemala2026','123456789','Luna-Café7!Bosque']],
+['resp_p18','18. ¿Para qué sirve principalmente la autenticación de dos factores?','i',['Aumentar la velocidad de Internet','Agregar una segunda verificación de identidad','Eliminar virus','Guardar automáticamente las contraseñas']],
+['resp_p19','19. ¿Qué debería hacer antes de instalar un programa descargado de Internet?','i',['Desactivar el antivirus','Verificar que provenga de una fuente confiable','Compartirlo con otras personas','Ejecutarlo como administrador inmediatamente']],
+['resp_p20','20. ¿Cuál es una señal frecuente de un posible intento de phishing?','i',['Dirección oficial verificada','Mensaje urgente con enlace sospechoso','Solicitud de actualización del sistema operativo','Página guardada en favoritos']]]]];
+const TITLES={};Q.forEach(s=>s[1].forEach(f=>TITLES[f[0]]=f[1]));
+const $=id=>document.getElementById(id);
+const el=(t,p={},k=[])=>{const e=document.createElement(t);Object.assign(e,p);k.forEach(c=>e.append(c));return e};
+let mine=null,msg='';
+
+function show(v){$('vF').hidden=v!=='F';$('vV').hidden=v!=='V';$('bF').className=v==='F'?'on':'';$('bV').className=v==='V'?'on':''}
+$('bF').onclick=()=>show('F');$('bV').onclick=()=>show('V');
+
+/* ---------- formulario ---------- */
+const form=el('form');form.noValidate=true;
+const inp={};
+Q.forEach(([title,fs])=>{
+  const g=el('div',{className:'grid'});
+  fs.forEach(([k,lab,t,o])=>{
+    let c;
+    if(t==='n'){c=el('input',{type:'number',min:o.min,max:o.max,step:o.int?1:'any',inputMode:o.int?'numeric':'decimal'})}
+    else{c=el('select',{},[el('option',{value:'',textContent:'Selecciona…'}),...o.map((x,i)=>el('option',{value:t==='i'?String(i+1):x,textContent:x}))])}
+    inp[k]={c,t,o,lab,box:el('label',{},[el('span',{textContent:lab}),c])};
+    g.append(inp[k].box);
+  });
+  form.append(el('fieldset',{},[el('legend',{textContent:title}),g]));
+});
+function sync(){const si=inp.incidente_12m.c.value==='Sí';['tipo_incidente','num_incidentes_12m'].forEach(k=>{inp[k].box.hidden=!si})}
+inp.incidente_12m.c.onchange=sync;sync();
+const err=el('div',{className:'err',role:'alert'});
+form.append(err,el('button',{type:'submit',className:'go',textContent:'Enviar respuesta'}));
+$('vF').append(form);
+
+form.onsubmit=e=>{
+  e.preventDefault();err.textContent='';
+  const si=inp.incidente_12m.c.value==='Sí',row=[81];
+  for(const k of COLS.slice(1)){
+    const f=inp[k];
+    if(!si&&k==='tipo_incidente'){row.push('Ninguno');continue}
+    if(!si&&k==='num_incidentes_12m'){row.push(0);continue}
+    const v=f.c.value.trim();
+    if(v===''){err.textContent='Falta responder: '+f.lab;f.c.focus();return}
+    if(f.t==='n'){const x=Number(v);
+      if(!isFinite(x)||x<f.o.min||x>f.o.max||(f.o.int&&!Number.isInteger(x))){err.textContent='Valor no válido en: '+f.lab+' (entre '+f.o.min+' y '+f.o.max+')';f.c.focus();return}
+      row.push(x)}
+    else row.push(f.t==='i'?Number(v):v);
+  }
+  mine=row;msg='Tu respuesta aparece como el registro 81. Solo la ves tú en esta pantalla: no se guarda ni la recibe nadie.';
+  form.reset();sync();render();show('V');
+  const m=document.querySelector('#vV tr.mine');if(m)m.scrollIntoView({block:'center'});
+};
+
+/* ---------- tabla ---------- */
+const q=el('input',{type:'search',placeholder:'Buscar en todas las columnas…'});q.oninput=()=>render();
+const cnt=el('span');
+const okBox=el('div',{className:'ok'});okBox.hidden=true;
+const wrap=el('div',{className:'wrap'});
+$('vV').append(okBox,el('div',{className:'tools'},[q,cnt]),wrap);
+
+function render(){
+  const all=mine?[...DATA,mine]:DATA;
+  cnt.replaceChildren(el('b',{textContent:String(all.length)}),' registros');
+  okBox.hidden=!msg;okBox.textContent=msg;
+  const t=q.value.trim().toLowerCase();
+  const rows=all.filter(r=>!t||r.some(v=>String(v).toLowerCase().includes(t)));
+  const tb=el('table'),hd=el('tr');
+  COLS.forEach(c=>hd.append(el('th',{textContent:c,title:TITLES[c]||'Número de registro'})));
+  tb.append(el('thead',{},[hd]));
+  const bd=el('tbody');
+  rows.forEach(r=>bd.append(el('tr',{className:r===mine?'mine':''},r.map(v=>el('td',{textContent:v})))));
+  tb.append(bd);wrap.replaceChildren(tb);
+}
+render();
+</script>
+</body>
+</html>
